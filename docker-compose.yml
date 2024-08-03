@@ -1,0 +1,159 @@
+---
+version: '3.7'
+services:
+  ## Swagger Centralized Api Docker Compose
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    container_name: "swagger-ui"
+    ports:
+      - "8080:8080"
+    environment:
+      URLS: "[{name:'BlackList-Api', url:'http://localhost:9091/swagger-ui/index.html'}, 
+      {name:'Authentication-Api', url:'http://localhost:2024/swagger-ui/index.html'},
+      {name:'Manager-Api', url:'http://localhost:9092/swagger-ui/index.html'},
+      {name:'Worker-Api', url:'http://localhost:9097/swagger-ui/index.html'},
+      {name:'PickUpPoint-Api', url:'http://localhost:9094/swagger-ui/index.html'},
+      {name:'Review-Api', url:'http://localhost:9095/swagger-ui/index.html'},
+      {name:'Shift-Api', url:'http://localhost:9096/swagger-ui/index.html'}]"
+
+  postgres:
+    container_name: postgres
+    image: postgres
+    environment:
+      POSTGRES_DB: FlexiShift
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Xemyru
+      PGDATA: /data/postgres
+    volumes:
+      - ./postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    restart: always
+
+  ## Image install ========================================================================================
+
+  ## Blacklist-Service Docker Compose Config
+  blacklist-service:
+    container_name: blacklist-service
+    image: microservices/blacklist-service:latest
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/FlexiShift
+    depends_on:
+      - postgres
+      - discovery-server
+      - api-gateway
+
+  ## FinancialTransaction-Service Docker Compose Config
+  financialTransaction-service:
+    container_name: financialTransaction-service
+    image: microservices/financial-transaction-service:latest
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/FlexiShift
+    depends_on:
+      - postgres
+      - discovery-server
+      - api-gateway
+
+  ## Manager-Service Docker Compose Config
+  manager-service:
+    container_name: manager-service
+    image: microservices/manager-service:latest
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/FlexiShift
+    depends_on:
+      - postgres
+      - discovery-server
+      - api-gateway
+
+  ## PickUpPoint-Service Docker Compose Config
+  pickUpPoint-service:
+    container_name: pickUpPoint-service
+    image: microservices/pick-up-point-service:latest
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/FlexiShift
+    depends_on:
+      - postgres
+      - discovery-server
+      - api-gateway
+
+  ## Review-Service Docker Compose Config
+  review-service:
+    container_name: review-service
+    image: microservices/review-service:latest
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/FlexiShift
+    depends_on:
+      - postgres
+      - discovery-server
+      - api-gateway
+
+  ## Shift-Service Docker Compose Config
+  shift-service:
+    container_name: shift-service
+    image: microservices/shift-service:latest
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/FlexiShift
+    depends_on:
+      - postgres
+      - discovery-server
+      - api-gateway
+
+  ## Worker-Service Docker Compose Config
+  worker-service:
+    container_name: worker-service
+    image: microservices/worker-service:latest
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/FlexiShift
+    depends_on:
+      - postgres
+      - discovery-server
+      - api-gateway
+
+  ## Zookeeper
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.0.1
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  broker:
+    image: confluentinc/cp-kafka:7.0.1
+    container_name: broker
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+
+  ## Eureka Server
+  discovery-server:
+    image: microservices-tutorial/discovery-service:latest
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  api-gateway:
+    image: microservice-tutorial/api-gateway:latest
+    container_name: api-gateway
+    ports:
+      - "8181:8080"
+    expose:
+      - "8181"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
+    depends_on:
+      - discovery-server
