@@ -18,6 +18,8 @@
     <modules>
         <module>Manager-Service</module>
         <module>Discovery-service</module>
+        <module>Notification-Service</module>
+        <module>Penalty-Service</module>
         <module>Authentication-Service</module>
         <module>FinancialTransaction-Service</module>
         <module>BlackList-Service</module>
