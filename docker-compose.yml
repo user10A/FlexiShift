@@ -1,12 +1,28 @@
 ---
-version: '3.7'
+version: '3'
+
 services:
-  ## Swagger Centralized Api Docker Compose
-  swagger-ui:
-    image: swaggerapi/swagger-ui
-    container_name: "swagger-ui"
+
+  api-gateway:
+    image: your-api-gateway-image
     ports:
-      - "8080:8080"
+      - "8181:8080"
+    # Remove the `depends_on` field if the `discovery-s` service is not required
+    # depends_on:
+    #   - discovery-s
+
+  discovery-s:
+    image: your-discovery-s-image
+    ports:
+      - "8081:8081"
+#version: '3.7'
+#services:
+#  ## Swagger Centralized Api Docker Compose
+#  swagger-ui:
+#    image: swaggerapi/swagger-ui
+#    container_name: "swagger-ui"
+#    ports:
+#      - "8080:8080"
     environment:
       URLS: "[{name:'BlackList-Api', url:'http://localhost:9091/swagger-ui/index.html'}, 
       {name:'Authentication-Api', url:'http://localhost:2024/swagger-ui/index.html'},
@@ -20,10 +36,10 @@ services:
     container_name: postgres
     image: postgres
     environment:
-      POSTGRES_DB: FlexiShift
+      POSTGRES_DB: flexishift
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Xemyru
-      PGDATA: /data/postgres
+      POSTGRES_PASSWORD: erkin
+      DATA: /data/postgres
     volumes:
       - ./postgres:/data/postgres
     ports:
@@ -37,7 +53,7 @@ services:
     container_name: blacklist-service
     image: microservices/blacklist-service:latest
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/FlexiShift
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/flexishift
     depends_on:
       - postgres
       - discovery-server
@@ -48,7 +64,7 @@ services:
     container_name: financialTransaction-service
     image: microservices/financial-transaction-service:latest
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/FlexiShift
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/flexishift
     depends_on:
       - postgres
       - discovery-server
@@ -59,7 +75,7 @@ services:
     container_name: manager-service
     image: microservices/manager-service:latest
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/FlexiShift
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/flexishift
     depends_on:
       - postgres
       - discovery-server
@@ -70,7 +86,7 @@ services:
     container_name: pickUpPoint-service
     image: microservices/pick-up-point-service:latest
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/FlexiShift
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/flexishift
     depends_on:
       - postgres
       - discovery-server
@@ -81,7 +97,7 @@ services:
     container_name: review-service
     image: microservices/review-service:latest
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/FlexiShift
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/flexishift
     depends_on:
       - postgres
       - discovery-server
@@ -92,7 +108,7 @@ services:
     container_name: shift-service
     image: microservices/shift-service:latest
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/FlexiShift
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/flexishift
     depends_on:
       - postgres
       - discovery-server
@@ -103,7 +119,7 @@ services:
     container_name: worker-service
     image: microservices/worker-service:latest
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/FlexiShift
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/flexishift
     depends_on:
       - postgres
       - discovery-server
@@ -141,19 +157,19 @@ services:
     image: microservices-tutorial/discovery-service:latest
     container_name: discovery-server
     ports:
-      - "8761:8761"
+      - "8762:8762"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
 
-  api-gateway:
-    image: microservice-tutorial/api-gateway:latest
-    container_name: api-gateway
-    ports:
-      - "8181:8080"
-    expose:
-      - "8181"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
-    depends_on:
-      - discovery-server
+#  api-gateway:
+#    image: microservice-tutorial/api-gateway:latest
+#    container_name: api-gateway
+#    ports:
+#      - "8181:8080"
+#    expose:
+#      - "8181"
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=docker
+#      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
+#    depends_on:
+#      - discovery-s

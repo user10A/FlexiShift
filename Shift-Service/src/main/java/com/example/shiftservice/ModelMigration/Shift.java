@@ -27,6 +27,7 @@ public class Shift {
     @Column(name = "is_confirmed")
     private boolean isConfirmed;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'available'")
     private ShiftStatus status;
 

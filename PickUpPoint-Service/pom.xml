@@ -97,5 +97,19 @@
             <artifactId>modelmapper</artifactId>
             <version>3.2.0</version>
         </dependency>
-    </dependencies>
+    </dependencies> <build>
+    <plugins>
+        <plugin>
+            <groupId>com.google.cloud.tools</groupId>
+            <artifactId>jib-maven-plugin</artifactId>
+            <version>3.2.1</version>
+            <configuration>
+                <to>
+                    <image>microservices-tutorial/pickupoint-service</image>
+                </to>
+            </configuration>
+        </plugin>
+
+    </plugins>
+</build>
 </project>
