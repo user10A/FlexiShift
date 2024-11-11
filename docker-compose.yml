@@ -43,7 +43,7 @@ services:
     volumes:
       - ./postgres:/data/postgres
     ports:
-      - "5432:5432"
+      - "5400:5400"
     restart: always
 
   ## Image install ========================================================================================

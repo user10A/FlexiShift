@@ -12,8 +12,6 @@ import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
-import java.sql.Timestamp;
 import java.util.Optional;
 
 @Service
@@ -50,7 +48,7 @@ public class ManagerServiceImpl implements ManagerService {
                 .id(manager_id)
                 .name(manager.getName())
                 .email(manager.getEmail())
-                .pickupPointResponse(pickupPointsResponse)
+                .pickupPoints(pickupPointsResponse)
                 .build();
     }
 
@@ -84,7 +82,7 @@ public class ManagerServiceImpl implements ManagerService {
                 .id(manager_id)
                 .name(manager.getName())
                 .email(manager.getEmail())
-                .pickupPointResponse(pickupPointsResponse)
+                .pickupPoints(pickupPointsResponse)
                 .build();
     }
 }
